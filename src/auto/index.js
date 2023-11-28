@@ -8,7 +8,7 @@ const delay = milliseconds =>
 async function save (base64, url, count, timestamp) {
   fs.writeFileSync(
     `${path.join(__dirname, '../../archive')}/${
-      new URL(url).hostname
+      new URL(`http://${url}`).hostname
     }-${count}.png`,
     base64.replace(/^data:image\/png;base64,/, ''),
     'base64'
@@ -49,7 +49,7 @@ async function go (url) {
 }
 
 async function init () {
-  const urls = fs.readFileSync(path.join(__dirname, './hosts.txt'), 'utf-8').replace(/^[#;].*$/gm, '').replace(/(\r?\n)(?:\r?\n)+/gm, '').replace(/0.0.0.0 /gm, '').split('\n')
+  const urls = fs.readFileSync(path.join(__dirname, './500.txt'), 'utf-8').replace(/^[#;].*$/gm, '').replace(/(\r?\n)(?:\r?\n)+/gm, '').replace(/0.0.0.0 /gm, '').split('\n')
   console.log(urls.length)
 
   /* const urls = [
