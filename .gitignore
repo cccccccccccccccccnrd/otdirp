@@ -1,0 +1,7 @@
+.env
+node_modules
+
+ext
+archive
+key.pem
+*.txt
