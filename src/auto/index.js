@@ -6,14 +6,16 @@ let browser
 const delay = milliseconds =>
   new Promise(resolve => setTimeout(resolve, milliseconds))
 
-async function save (base64, url, count, timestamp) {
+async function archive (base64, c) {
+  const n = `${path.join(__dirname, '../../archive')}/${
+    new URL(`http://${c.url}`).hostname
+  }-${c.count}`
   fs.writeFileSync(
-    `${path.join(__dirname, '../../archive')}/${
-      new URL(`http://${url}`).hostname
-    }-${count}.png`,
+    `${n}.png`,
     base64.replace(/^data:image\/png;base64,/, ''),
     'base64'
   )
+  fs.writeFileSync(`${n}.json`, JSON.stringify(c, null, 2), 'utf-8')
 }
 
 async function go (url) {
@@ -21,23 +23,32 @@ async function go (url) {
 
   try {
     page.setDefaultNavigationTimeout(10000)
-    const now = Date.now()
-    let count = 0
 
-    await page.exposeFunction('toDataURL', base64 => {
-      console.log('◯‍ toDataURL()', base64.length)
-      save(base64, url, count, now)
-      count++
-    })
+    const c = {
+      url,
+      now: Date.now(),
+      count: 0,
+      calls: []
+    }
 
-    await page.evaluateOnNewDocument(() => {
-      const o = HTMLCanvasElement.prototype.toDataURL
-      HTMLCanvasElement.prototype.toDataURL = function () {
-        const result = o.apply(this, arguments)
-        toDataURL(result)
-        return result
+    await page.exposeFunction('d1ff3r3nc3', (f, as, r) => {
+      console.log(`◯‍ ${f}()`, Object.values(as))
+      switch (f) {
+        case 'toDataURL':
+          archive(r, c)
+          c.calls = []
+          c.count++
+          break
+        default:
+          c.calls.push({
+            function: f,
+            arguments: Object.values(as)
+          })
       }
     })
+
+    const inj = fs.readFileSync(path.join(__dirname, './inj.js'), 'utf8')
+    await page.evaluateOnNewDocument(inj)
 
     await page.goto(`http://${url}`, { waitUntil: 'networkidle2' })
     await delay(2000)
@@ -51,19 +62,15 @@ async function go (url) {
 }
 
 async function init () {
-  const urls = fs
+  /* const urls = fs
     .readFileSync(path.join(__dirname, './500.txt'), 'utf-8')
     .replace(/^[#;].*$/gm, '')
     .replace(/(\r?\n)(?:\r?\n)+/gm, '')
     .replace(/0.0.0.0 /gm, '')
     .split('\n')
-  console.log(urls.length)
+  console.log(urls.length) */
 
-  /* const urls = [
-    'http://addthis.com',
-    'https://fingerprint.com',
-    'http://tiktok.com'
-  ] */
+  const urls = ['mediafire.com', 'fingerprint.com', 'tiktok.com']
 
   browser = await puppeteer.launch({ headless: 'new' })
   let count = 0
@@ -72,6 +79,9 @@ async function init () {
     await go(url)
     count++
   }
+
+  await browser.close()
+  process.exit()
 }
 
 init()
