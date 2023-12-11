@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>On the Difference in Rendering Pixels (2022)</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside style="max-width: 375px">
+      <div class="s">
+        <h2>On the Difference in Rendering Pixels</h2>
+        <p>
+          In their 2003 patent US9235849B2 “Generating User Information for Use in Targeted Advertising,“ Google introduced the invention of so-called <em>User Information Servers</em> as an extension to their vision of the infrastructure of the world wide web network(s) (see fig. 1). These servers would host arrays of <em>User Information Profiles</em>, which would serve as critical pointers for their advertising services as they would contain extensive behavioural data.<sup>1</sup> These profiles were designed to be provided and accessed by third parties and would eventually lead to the analysis of behavioural data including the prediction of whether a specific user was likely to click on an ad or not. Since then advertisements are not merely displayed or predetermined objects on the WWW, but are auctioned off in real time to be displayed to a particular set of human behaviour.<sup>2</sup> Today, the accumulation of behavioural data is the foundation of digital capital, not singled out to Google, but as a vast infrastructure spread throughout it -- often referred to as the essential business model of the internet.<sup>3</sup>
+        </p>
+        <h2>Techniques to Distinguish</h2>
+        <p>
+          The at-hand phenomenon of <em>Canvas Fingerprinting</em> (see fig. 2) introduces a post-cookie technique to uniquely identify profiles and their users. This consistent high-entropy technique depends on the differences in the way various web browsers and their operating systems render images on the canvas html element. This subtle difference in the rendering (see fig. 3) of the same instructions is one of the many techniques to distinguish. The composition of actual rendered pixels, containing seemingly random text pangrams, basic shapes, colour gradients and emojis, may depend on the difference in system fonts, anti-aliasing, sub-pixel smoothing, gpu driver or even the physical display.<sup>4</sup> Important to note is that the fingerprint compositions are never actually rendered visually within the display of their users -- these images exist only as a computer code artefact and are directly extracted behind the scenes in a fraction of a second without the user's awareness.
+        </p>
+        <h2>Browser Forensics</h2>
+        <p>
+          These <em>Operational Images</em><sup>5</sup> showcase the invisual infrastructure of the extraction logic of what the internet’s fragile foundation is based on<sup>6</sup> -- they reveal the messiness of digital capital and question the prevailing technological deterministic thought of today.
+        </p>
+      </div>
+      <div class="s">
+        <p>
+          1 Google Inc., Generating User Information for Use in Targeted Advertising (US9235849B2), https://patents.google.com/patent/US9235849B2/en, 2003.
+        </p>
+        <p>2 Jun Wang et al., Display Advertising with Real-Time Bidding (RTB) and Behavioural Targeting, https://arxiv.org/abs/1610.03013, 2017.</p>
+        <p>3 Shoshana Zuboff, The Age of Surveillance Capitalism: The Fight for a Human Future at the New Frontier of Power, Profile Books, 2019.</p>
+        <p>
+          4 Keaton Mowery et al., Pixel Perfect: Fingerprinting Canvas in HTML5, https://hovav.net/ucsd/dist/canvas.pdf, 2012.
+        </p>
+        <p>5 Jussi Parikka, Operational Images: From the Visual to the Invisual, Minnesota Press, 2023.</p>
+        <p>6 Tim Hwang, Subprime Attention Crisis, FSG Originals, 2020.</p>
+      </div>
+    </aside>
+    <aside style="max-width: 700px">
+      <div id="m" class="s"></div>
+    </aside>
+    <div id="o">
+      <img
+        id="c"
+        src="material/fps/www.tiktok.com-2.png"
+        style="image-rendering: pixelated; z-index: 0"
+      />
+    </div>
+    <script type="module" src="diff.js"></script>
+  </body>
+</html>

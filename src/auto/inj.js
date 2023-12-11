@@ -33,7 +33,8 @@ ofs.forEach(of => {
   const o = of.o[of.f]
   of.o[of.f] = function () {
     const r = o.apply(this, arguments)
-    d1ff3r3nc3(of.f, arguments, r)
+    const s = Error().stack.split('\n').map((l) => l.trim()).slice(1)
+    d1ff3r3nc3(of.f, arguments, r, s)
     return r
   }
 })

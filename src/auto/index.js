@@ -1,42 +1,53 @@
 const puppeteer = require('puppeteer')
-const path = require('path')
 const fs = require('fs')
-let browser
+const path = require('path')
 
-const delay = milliseconds =>
-  new Promise(resolve => setTimeout(resolve, milliseconds))
+const state = {
+  browser: null,
+  list: null,
+  now: Date.now()
+}
+
+function delay (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 async function archive (base64, c) {
-  const n = `${path.join(__dirname, '../../archive')}/${
-    new URL(`http://${c.url}`).hostname
-  }-${c.count}`
+  const f = path.join(__dirname, `../../archive/${state.list}`)
+  if (!fs.existsSync(f)) fs.mkdirSync(f)
+
+  const p = `${f}/${new URL(`https://${c.url}`).hostname}-${c.count}`
   fs.writeFileSync(
-    `${n}.png`,
+    `${p}.png`,
     base64.replace(/^data:image\/png;base64,/, ''),
     'base64'
   )
-  fs.writeFileSync(`${n}.json`, JSON.stringify(c, null, 2), 'utf-8')
+  fs.writeFileSync(`${p}.json`, JSON.stringify(c, null, 2), 'utf-8')
 }
 
 async function go (url) {
-  const page = await browser.newPage()
+  const page = await state.browser.newPage()
 
   try {
-    page.setDefaultNavigationTimeout(10000)
+    page.setDefaultNavigationTimeout(30000)
 
     const c = {
       url,
       now: Date.now(),
       count: 0,
-      calls: []
+      calls: [],
+      stack: []
     }
 
-    await page.exposeFunction('d1ff3r3nc3', (f, as, r) => {
+    await page.exposeFunction('d1ff3r3nc3', (f, as, r, s) => {
       console.log(`◯‍ ${f}()`, Object.values(as))
+
       switch (f) {
         case 'toDataURL':
+          c.stack = s
           archive(r, c)
           c.calls = []
+          c.stack = []
           c.count++
           break
         default:
@@ -50,38 +61,43 @@ async function go (url) {
     const inj = fs.readFileSync(path.join(__dirname, './inj.js'), 'utf8')
     await page.evaluateOnNewDocument(inj)
 
-    await page.goto(`http://${url}`, { waitUntil: 'networkidle2' })
-    await delay(2000)
+    await page.goto(`https://${url}`, { waitUntil: 'networkidle2' })
+    await delay(1000)
 
     return true
   } catch (error) {
-    console.log(error)
+    console.log(error.message)
   } finally {
     await page.close()
   }
 }
 
-async function init () {
-  /* const urls = fs
-    .readFileSync(path.join(__dirname, './500.txt'), 'utf-8')
-    .replace(/^[#;].*$/gm, '')
-    .replace(/(\r?\n)(?:\r?\n)+/gm, '')
-    .replace(/0.0.0.0 /gm, '')
+async function browse () {
+  const urls = fs
+    .readFileSync(
+      path.join(__dirname, `../utils/hosts/${state.list}.txt`),
+      'utf-8'
+    )
     .split('\n')
-  console.log(urls.length) */
+    /* .slice(370, 500) */
 
-  const urls = ['mediafire.com', 'fingerprint.com', 'tiktok.com']
+  console.log(urls.length)
 
-  browser = await puppeteer.launch({ headless: 'new' })
+  state.browser = await puppeteer.launch({ headless: 'new' })
   let count = 0
   for (const url of urls) {
-    console.log(count, url)
+    console.log(((Date.now() - state.now) / 1000 / 60).toFixed(2), count, url)
     await go(url)
     count++
   }
 
-  await browser.close()
+  await state.browser.close()
   process.exit()
+}
+
+async function init () {
+  state.list = '+'// '17'
+  browse()
 }
 
 init()
