@@ -30,5 +30,5 @@ async function init () {
 
     count === m.length - 1 ? (count = 0) : count++
     console.log(count, m[count])
-  }, 2000)
+  }, 15 * 1000)
 }
