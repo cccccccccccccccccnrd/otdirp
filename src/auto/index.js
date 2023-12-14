@@ -79,7 +79,7 @@ async function browse () {
       'utf-8'
     )
     .split('\n')
-    /* .slice(370, 500) */
+    .slice(0, 500)
 
   console.log(urls.length)
 
@@ -96,7 +96,7 @@ async function browse () {
 }
 
 async function init () {
-  state.list = '+'// '17'
+  state.list = '18'
   browse()
 }
 
