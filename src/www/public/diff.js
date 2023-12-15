@@ -17,8 +17,7 @@ async function archive () {
   setInterval(() => {
     c.src = `/archive/${r[count]}`
     console.log(count)
-    if (count === r.length) count = 0
-    count++
+    count === r.length - 1 ? (count = 0) : count++
   }, 2000)
 }
 
