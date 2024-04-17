@@ -35,7 +35,18 @@ async function context () {
   })
 }
 
+async function rename () {
+  const ts = ['Materiality', 'Narratives', 'Pixels']
+  let count = 0
+  setInterval(() => {
+    t.innerText = ts[count]
+    console.log(count, ts[count])
+    count === ts.length - 1 ? (count = 0) : count++
+  }, 5000)
+}
+
 context()
 archive()
+rename()
 
-console.log(`%cOn the Difference in Rendering Pixels (2022)`, 'padding: 0.5em; color: white; font-size: 2em;')
+console.log(`%cOn the Difference in Rendering ::: (2022)`, 'padding: 0.5em; color: white; font-size: 2em;')
